@@ -1,6 +1,13 @@
-function [muSamples, clusters] = collapsedGibbsBernoulliMixture(X,nComponents,nSamples,nBurnin,...
-                                                    nThin,priorParams)
-% Bayesian Bernoulli Mixture Model with collapsed Gibbs Sample
+function [muSamples, clusters,logLike] = collapsedGibbsBernoulliMixture(X,nComponents,nSamples,...
+                                                    nBurnin, nThin,priorParams,logLikeCompute)
+% Bayesian Bernoulli Mixture Model with collapsed Gibbs Sample.
+% Collapsed Gibbs Sample converges with smaller number of iterations
+% and has smaller variance than standard Gibbs Sample
+% (see Rao-Blackwell theorem), however each sample in collapsed Gibbs is 
+% more expensive.
+% In MATLAB due to the speed of vectorized operations vanilla Gibbs can 
+% be sometimes faster than collapsed Gibbs (since collapsed uses for 
+% loop to iterate through data samples)
 %
 % Parameters
 % ----------
@@ -18,15 +25,24 @@ function [muSamples, clusters] = collapsedGibbsBernoulliMixture(X,nComponents,nS
 % 
 % priorParams: struct, optional
 %    Parameters of latent variable distribution (after integrating out pr)
-%    .latentPrior
-%    .muBeta
-%    .muGamma
+%    .latentPrior - prior for latent variable
+%    .muBeta      - shape parameter for Beta prior of mean
+%    .muGamma     - shape parameter for Beta prior of mean
+%
+% logLikeCompute: bool, optional (DEFAULT = true)
+%    If true computes log-likelihood of data at each iteration
+%    IMPORTANT NOTE: This makes sampling slower since requires sampling 
+%    mixing probabilities and means (which otherwise are not sampled)
 % 
 % Returns
 % -------
-% muSamples: 
-%      Samples 
-% logLike : 
+% muSamples: Tensor of size (nComponents,nFeatures,nSamples)
+%      Samples from means of clusters
+%
+% clusters: matrix of size (nDataSamples,nSamples)
+%      Cluster ids for each samples (Be aware of possible label switch)
+%
+% logLike : Vector of size (1,nSamples*nThin + nBurnin)
 %      Vector of loglikelihoods
 
 
@@ -40,12 +56,15 @@ end
 if ~exist('nThin','var')
     nThin    = 10;
 end
+if ~exist('logLikeCompute','var')
+    logLikeCompute = true;
+end
 
 [nDataSamples,nFeatures] = size(X);
 if ~exist('priorParams','var')
-    muBeta       = 2+2*rand(1);
-    muGamma      = 2+2*rand(1);
-    latentPrior  = 2+2*rand(1);    
+    muBeta       = 1+1*rand(1);
+    muGamma      = 1+1*rand(1);
+    latentPrior  = 1+1*rand(1);    
 else
     muBeta  = priorParams.muBeta;
     muGamma = priorParams.muGamma;
@@ -55,8 +74,8 @@ end
 % generate initial assignments of latent variables
 latentVar = mnrnd(1,ones(1,nComponents)/nComponents,nDataSamples);
 clusters  = zeros(nDataSamples,nSamples);
-muSamples = zeros(nSamples,nFeatures);
-
+muSamples  = zeros(nComponents,nFeatures,nSamples);
+logLike   = zeros(1,nSamples*nThin + nBurnin);
 
 for i = 1:(nSamples*nThin+nBurnin)
     
@@ -89,26 +108,44 @@ for i = 1:(nSamples*nThin+nBurnin)
         Nk = Nk_j + latentVar(j,:);
         Ck = Ck_j + kron(X(j,:),latentVar(j,:)');       
     end
+    
+    % Note that in collapsed Gibbs we need to sample only latent variable,
+    % however if we want to compute loglikelihood we will need to sample
+    % success probabilities and mixing probabilities
+    if logLikeCompute
+        % sample mixing probs
+        prSample = dirchrnd( latentPrior + Nk);
+        % sample means
+        muBetaPost  = muBeta + Ck;
+        muGammaPost = muGamma + bsxfun(@minus,Nk_j',Ck_j);
+        muSample  = betarnd(muBetaPost,muGammaPost);
+        % compute log-likelihood
+        for k = 1:nComponents
+            componentIndex = latentVar(:,k)==1;
+            logLikeK = sum( binologpdf(X(componentIndex,:),muSample(k,:)));
+            logLike(i) = logLike(i) + logLikeK + log(prSample(k))*sum(componentIndex);
+        end
+        % if after burnin & thinning applied save mean sample
+        if i > nBurnin && mod(i-nBurnin,nThin)==0
+            idx = floor((i-nBurnin)/nThin);
+            muSamples(:,:,idx) = muSample;
+        end
+    end
         
     if i > nBurnin && mod(i-nBurnin,nThin)==0
+        
        % accept sample after burnin & thinning
        idx = floor((i-nBurnin)/nThin);
        [Max,clusterIndex] = max(latentVar,[],2); 
-       clusters(:,idx)    = clusterIndex
-       
+       clusters(:,idx)    = clusterIndex;
        % sample means from posterior
-       
-     
-    end
-    
-    
+       if logLikeCompute ~= true
+           muBetaPost  = muBeta + Ck;
+           muGammaPost = muGamma + bsxfun(@minus,Nk_j',Ck_j);
+           muSample  = betarnd(muBetaPost,muGammaPost);
+           muSamples(:,:,idx) = muSample;
+       end
+    end  
 end
-
-
-
-
-
-
-
 
 
