@@ -62,9 +62,9 @@ end
 
 [nDataSamples,nFeatures] = size(X);
 if ~exist('priorParams','var')
-    muBeta       = 1+1*rand(1);
-    muGamma      = 1+1*rand(1);
-    latentPrior  = 1+1*rand(1);    
+    muBeta       = 2+1*rand(1);
+    muGamma      = 2+1*rand(1);
+    latentPrior  = 5+1*rand(1);    
 else
     muBeta  = priorParams.muBeta;
     muGamma = priorParams.muGamma;
@@ -91,10 +91,11 @@ for i = 1:(nSamples*nThin+nBurnin)
         % compute log p(x | Z_{-i}, z_{i} = k) [not normalised]
         muBetaPost = muBeta + Ck_j;
         muGammaPost = muGamma + bsxfun(@minus,Nk_j',Ck_j);
-        logSucces = bsxfun(@times,log(muBetaPost),X(j,:));
+        logSuccess = bsxfun(@times,log(muBetaPost),X(j,:));
         logFail   = bsxfun(@times,log(muGammaPost),1 - X(j,:));
         logJoint  = log( bsxfun(@plus,Nk_j',muGamma + muBeta));
-        logPx     = sum(logSucces + logFail,2)- nComponents*logJoint;
+        size(logJoint)
+        logPx     = sum(logSuccess + logFail,2)- nFeatures*logJoint;
         
         % compute log p(z_{i} | Z_{-i}, X)
         logPz     = log(latentPrior + Nk_j) + logPx';

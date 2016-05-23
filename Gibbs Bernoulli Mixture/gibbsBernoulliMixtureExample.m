@@ -12,5 +12,8 @@
 
 X = csvread('digits_examples.csv');
 % vanilla Gibbs
-[vMuSamples,vClusters,vLogLike] = vanillaGibbsBernoulliMixture(X,3,10,1000,5);
-[cMuSamples,cClusters,cLogLike] = collapsedGibbsBernoulliMixture(X,3,10,1000,5);
+%[vMuSamples,vClusters,vLogLike] = vanillaGibbsBernoulliMixture(X,3,10,1000,2);
+[cMuSamples,cClusters,cLogLike] = collapsedGibbsBernoulliMixture(X,3,10,100,2);
+plot(vLogLike,'r-')
+hold on
+plot(cLogLike,'g-')
