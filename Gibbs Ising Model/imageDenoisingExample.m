@@ -16,7 +16,7 @@ nSamples         = 100;
 nThin            = 3;
 
 % samples after burnin and thinning
-samples = GibbsIsingModel(noisyImg,couplingStrength,externalStrength,...
+samples = gibbsIsingModel(noisyImg,couplingStrength,externalStrength,...
                           nSamples,nBurnin,nThin);                      
                       
 % vizualise noisy image

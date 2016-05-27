@@ -1,5 +1,5 @@
 function [muSamples, clusters,logLike] = collapsedGibbsBernoulliMixture(X,nComponents,nSamples,...
-                                                    nBurnin, nThin,priorParams,logLikeCompute)
+                                                    nBurnin, nThin,logLikeCompute,priorParams)
 % Bayesian Bernoulli Mixture Model with collapsed Gibbs Sample.
 % Collapsed Gibbs Sample converges with smaller number of iterations
 % and has smaller variance than standard Gibbs Sample
@@ -11,6 +11,9 @@ function [muSamples, clusters,logLike] = collapsedGibbsBernoulliMixture(X,nCompo
 %
 % Parameters
 % ----------
+% X: matrix of size (nDataSamples,nFeatures)
+%    Data matrix
+%
 % nComponents: integer
 %     Number of components in mixture model
 % 
@@ -94,7 +97,6 @@ for i = 1:(nSamples*nThin+nBurnin)
         logSuccess = bsxfun(@times,log(muBetaPost),X(j,:));
         logFail   = bsxfun(@times,log(muGammaPost),1 - X(j,:));
         logJoint  = log( bsxfun(@plus,Nk_j',muGamma + muBeta));
-        size(logJoint)
         logPx     = sum(logSuccess + logFail,2)- nFeatures*logJoint;
         
         % compute log p(z_{i} | Z_{-i}, X)

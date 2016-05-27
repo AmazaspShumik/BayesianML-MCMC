@@ -1,9 +1,12 @@
 function [ muSamples, clusters, logLike ] = vanillaGibbsBernoulliMixture(X,nComponents,nSamples,...
-                                                    nBurnin,nThin,priorParams,logLikeCompute)
+                                                    nBurnin,nThin,logLikeCompute,priorParams)
 % Bernoulli Mixture Model implemented with vanilla Gibbs Sample.
 % 
 % Parameters
 % ----------
+% X: binary matrix of size (nDataSamples,nFeatures)
+%    Data Matrix (should consist of only zeros and ones)
+%
 % nComponents: integer
 %    Number of components in mixture model
 %
