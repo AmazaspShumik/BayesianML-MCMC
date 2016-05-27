@@ -1,0 +1,28 @@
+function [ output_args ] = collapsedGibbsLDA(X,nTopics)
+% Performs collapsed Gibbs Sample for Latent Dirichlet Allocation
+% 
+% Parameters
+% ----------
+% X: Data 
+%
+% nTopics: int
+%    Number of topics
+% 
+% nSamples: int, optional (DEFAULT = 1000)
+%    Number of samples
+% 
+% nBurnin: int, optional (DEFAULT = 250)
+%    
+% 
+% nThin
+%
+% Returns
+% -------
+%
+% References
+% ----------
+% Machine Le
+
+
+end
+
