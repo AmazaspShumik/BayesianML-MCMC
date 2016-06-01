@@ -1,4 +1,4 @@
-function [ samples] = collapsedGibbsLDA(Ws,Ds,nTopics, alpha, gamma,...
+function [ samples, loglike] = coll_gibbs_lda(Ws,Ds,nTopics, alpha, gamma,...
                                          nSamples,nBurnin,nThin)
 % Performs collapsed Gibbs Sample for Latent Dirichlet Allocation
 % 
@@ -33,12 +33,23 @@ function [ samples] = collapsedGibbsLDA(Ws,Ds,nTopics, alpha, gamma,...
 % samples: struct with fields ('topicAssignment','nDocumentTopic','nWordTopic','nTopic')
 %            Samples from posterior distribution of latent variable  
 %           
-%       : topicAssignment
-%       : nDocumentTopic
-%       : nWordTopic
-%       : nTopic
+%       - topicAssignment(:,sample_i):  vector of size (nCorpus,1)
+%               Topic assignment for each word in corpus in i-th sample
+%         
+%       - nDocumentTopic(:,:,sample_i): matrix of size (nDocs,nTopics)
+%               nDocumentTopic(d,k,sample_i) - number of words assigned 
+%               to topic k in document d in i-th sample
+% 
+%       - nWordTopic(:,:,sample_i): matrix of size (nVocab,nTopics)
+%              nWordTopic(v,k,sample_i) -  number of times word v was 
+%              assigned to topic k in i-th sample
+% 
+%       - nTopic(:,sample_i): vector of size (nTopics,1)
+%              Number of words assigned to each topic in i-th sample
+% 
+%       - loglike(sample_i): float
+%              Joint log-likelihood for i-th sample
 %             
-%
 % References
 % ----------
 % Machine Learning A Probabilistic Perspective (K. Murphy 2012)
@@ -48,7 +59,7 @@ if ~exist('nSamples','var')
     nSamples = 5;
 end
 if ~exist('nBurnin','var')
-    nBurnin = 10;
+    nBurnin = 20;
 end
 if ~exist('nThin','var')
     nThin = 2;
@@ -99,11 +110,13 @@ end
 samples = struct('topicAssignment',zeros(nCorpus,nSamples),...
                  'nDocumentTopic',zeros(nDocs,nTopics,nSamples),...
                  'nWordTopic',zeros(nVocab,nTopics,nSamples),...
-                 'nTopic',zeros(nTopics,nSamples));
+                 'nTopic',zeros(nTopics,nSamples),...
+                 'loglike',zeros(1,nSamples));
+loglike = zeros(1,nSamples*nThin+nBurnin);
 
 % ---------------------------- Start Sampling ----------------------------- 
 
-for j = 1:nSamples
+for j = 1:(nSamples*nThin+nBurnin)
     
     % for each word in corpus sample topic assignment
     for i = 1:nCorpus
@@ -137,6 +150,9 @@ for j = 1:nSamples
         nTopic(topicId) = nTopic(topicId) + 1;
     end
     
+    loglike(j) = joint_log_like(alpha,gamma,Nd,nTopic,nTopics,nDocs,nVocab,...
+                                nDocumentTopic,nWordTopic);
+    
     % accept sample after burnin & thinning
     if j > nBurnin && mod(j-nBurnin,nThin)==0
        idx = floor((j-nBurnin)/nThin);
@@ -144,6 +160,7 @@ for j = 1:nSamples
        samples.nDocumentTopic(:,:,idx) = nDocumentTopic;
        samples.nWordTopic(:,:,idx) = nWordTopic;
        samples.nTopic(:,idx) = nTopic;
+       samples.loglike(idx) = loglike(j);
     end
 
 end
