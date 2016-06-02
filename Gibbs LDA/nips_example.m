@@ -16,7 +16,7 @@ words = words(DS <= 100);
 
 % define parameters for sampling
 nSamples = 2;
-nBurnin  = 80;
+nBurnin  = 20;
 nThin    = 2;
 nTopics  = 20;
 alpha    = 1; 
