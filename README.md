@@ -7,7 +7,7 @@ In the example below we show how Ising Model can be used for Image Denoisning Ta
 
  ![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Ising%20Model/imageDenoisingDemo.jpg)
 
-In original image 9.73% of pixels were flipped to produce noisy image, after denoising only 1% of pixels reamined flipped.
+In original image 9.73% of pixels were flipped to produce noisy image, after denoising only 1% of pixels remained flipped.
 ![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Ising%20Model/proportionWrongPixels.jpg)
 
 
