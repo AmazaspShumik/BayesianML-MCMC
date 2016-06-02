@@ -11,7 +11,7 @@ noisyImg = data.noisy_img;
 % parameters of Gibbs Sample
 couplingStrength = -1;
 externalStrength = -1;
-nBurnin          = 200;
+nBurnin          = 100;
 nSamples         = 100;
 nThin            = 3;
 
@@ -28,6 +28,13 @@ title('Noisy Image')
 figure(2)
 imshow(samples(:,:,nSamples))
 title('Denoised Image, sample from posterior')
+
+% vizualise noisy and denoised images side by side
+sbs = ones(300,603);
+sbs(:,1:300) = noisyImg;
+sbs(:,304:603) = samples(:,:,nSamples);
+imshow(sbs)
+title('Image Denoising: Before and After')
 
 % vizualise picture without noise
 figure(3)
