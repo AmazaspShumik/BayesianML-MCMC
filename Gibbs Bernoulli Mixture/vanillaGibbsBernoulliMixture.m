@@ -57,7 +57,7 @@ end
 % number of datapoints & dimensionality
 [nDataSamples,nFeatures] = size(X);
 if ~exist('priorParams','var')
-    latentDist = 1 + rand(1,nComponents);
+    latentDist = 1 + 3*rand(1,nComponents);
     muBeta    = 1 + rand(nComponents,nFeatures);
     muGamma   = 1 + rand(nComponents,nFeatures);
 else
