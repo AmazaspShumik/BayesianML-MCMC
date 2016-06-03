@@ -3,7 +3,12 @@ This repository contains implementation of several Machine Learning Models using
 
 ## Bernoulli Mixture Model: Clustering Digits with Gibbs Sample
 
+
 ![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Bernoulli%20Mixture/meanSamples.jpg)
+
+In figure below we can see that collapsed sampler converges faster (measured in number of samples) than vanilla one, however
+it should be noted that each iteration of collapsed sampler requires more time. Both samplers converge to almost the same 
+value of log-likelihood.
 ![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Bernoulli%20Mixture/logLikePlot.jpg)
 
 ## Ising Model : Image Denoising Example
