@@ -4,7 +4,7 @@ This repository contains implementation of several Machine Learning Models using
 ## Bernoulli Mixture Model: Clustering Digits with Gibbs Sample
 
 ![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Bernoulli%20Mixture/meanSamples.jpg)
-![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Bernoulli%20Mixture/logLikePlots.jpg)
+![alt tag](https://github.com/AmazaspShumik/BayesianML-MCMC/blob/master/Gibbs%20Bernoulli%20Mixture/logLikePlot.jpg)
 
 ## Ising Model : Image Denoising Example
 In the example below we show how Ising Model can be used for Image Denoisning Tasks (image in this example is taken from Frank Wood's course in Columbia University). We use Gibbs Sampling to obtain samples from posterior of hidden variables.
