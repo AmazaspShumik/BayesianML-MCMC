@@ -51,7 +51,7 @@ hold on
 plot(cLogLike(1:20),'r-','linewidth',3)
 xlabel('Iterations')
 ylabel('log-likelihood')
-legend('vanillaGibbs','collapsedGibbs','Location','southeast')
-title('Convergence coparison for Gibbs Sampler: collapsed vs vanilla')
+legend('vanilla Gibbs','collapsed Gibbs','Location','southeast')
+title('Convergence comparison for Gibbs Sampler: collapsed vs vanilla')
 
     
