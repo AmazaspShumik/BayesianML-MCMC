@@ -48,7 +48,7 @@ ll = ll + nDocs*(gammaln(nTopics*alpha) - nTopics*gammaln(alpha));
 % integrating out topic distribution)
 for d = 1:nDocs
  ll = ll + sum(gammaln(alpha + nDocumentTopic(d,:)));
- ll = ll - gammaln(nTopic*alpha + Nd(d));
+ ll = ll - gammaln(nTopics*alpha + Nd(d));
 end
 
 % log of normalization constant for prior of word distribution
